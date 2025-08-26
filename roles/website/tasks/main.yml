@@ -1,5 +1,24 @@
 # SPDX-License-Identifier: MIT-0
 ---
+# tasks file for website
+
+# tasks/main.yml
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Ensure Nginx service is running and enabled
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
 - name: Ensure website path exists
   file:
     path: /var/www/html
@@ -15,20 +34,3 @@
     owner: www-data
     group: www-data
     mode: '0644'
-
-- name: Ensure Nginx image is present
-  community.docker.docker_image:
-    name: nginx
-    source: pull
-
-- name: Run Nginx container with mounted website
-  community.docker.docker_container:
-    name: mywebsite
-    image: nginx:latest
-    state: started
-    restart_policy: always
-    ports:
-      - "80:80"
-    volumes:
-      - "/var/www/html:/usr/share/nginx/html"
-    recreate: yes
