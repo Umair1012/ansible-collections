@@ -1,9 +1,7 @@
 # SPDX-License-Identifier: MIT-0
 ---
-# tasks file for website
-
 - name: Ensure website path exists
-  ansible.builtin.file:
+  file:
     path: /var/www/html
     state: directory
     owner: www-data
@@ -11,12 +9,17 @@
     mode: '0755'
 
 - name: Copy Website Template
-  ansible.builtin.template:
+  template:
     src: index.html.j2
     dest: /var/www/html/index.html
     owner: www-data
     group: www-data
     mode: '0644'
+
+- name: Ensure Nginx image is present
+  community.docker.docker_image:
+    name: nginx
+    source: pull
 
 - name: Run Nginx container with mounted website
   community.docker.docker_container:
@@ -28,3 +31,4 @@
       - "80:80"
     volumes:
       - "/var/www/html:/usr/share/nginx/html"
+    recreate: yes
