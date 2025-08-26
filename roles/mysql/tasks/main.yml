@@ -16,7 +16,7 @@
     name: myapp-mysql
     image: mysql:8.1
     restart_policy: always
-    state: enabled
+    state: started
     env:
       MYSQL_ROOT_PASSWORD: "{{ mysql_root_pass }}"
       MYSQL_DATABASE: "{{ mysql_db }}"
