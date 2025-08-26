@@ -8,16 +8,15 @@
   apt:
     update_cache: yes
 
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
 - name: Install Nginx
   apt:
     name: nginx
     state: present
-
-- name: Ensure Nginx service is running and enabled
-  service:
-    name: nginx
-    state: started
-    enabled: yes
+  notify: Restart Nginx
 
 - name: Ensure website path exists
   file:
@@ -34,3 +33,4 @@
     owner: www-data
     group: www-data
     mode: '0644'
+  notify: Restart Nginx
