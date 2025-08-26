@@ -16,18 +16,21 @@ pipeline {
 
         stage('Run Playbook') {
             steps {
+                // Use Jenkins credentials: Vault password + uploaded PEM key
                 withCredentials([
                     string(credentialsId: 'ansible-vault-pass', variable: 'ANSIBLE_VAULT_PASS'),
-                    sshUserPrivateKey(credentialsId: 'Master-Server', keyFileVariable: 'SSH_KEY')
+                    file(credentialsId: 'aws-pem-key', variable: 'SSH_KEY')
                 ]) {
                     sh '''
-                        # Write the Vault password into a temporary file
+                        # Create temporary file for Vault password
                         echo "$ANSIBLE_VAULT_PASS" > vault_pass.txt
 
-                        # Run the playbook using the SSH private key
-                        ansible-playbook site.yml --private-key $SSH_KEY --vault-password-file vault_pass.txt
+                        # Run Ansible playbook using the uploaded PEM key
+                        ansible-playbook site.yml \
+                          --private-key $SSH_KEY \
+                          --vault-password-file vault_pass.txt
 
-                        # Remove the temporary file for security
+                        # Cleanup temporary vault password file
                         rm -f vault_pass.txt
                     '''
                 }
